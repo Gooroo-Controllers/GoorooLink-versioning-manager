@@ -1,0 +1,41 @@
+Listing remote objects (swift list app-updates)…
+firmware/
+firmware/Liobox2/
+firmware/Liobox2/liobox2_v613.lbf
+firmware/Liobox2/liobox2_v614.lbf
+firmware/Liobox2/liobox2_v615.lbf
+firmware/Liobox2/liobox2_v616.lbf
+scripts/
+scripts/Ableton/
+scripts/Ableton/Liobox2_AbletonScripts_3.1.5.zip
+scripts/Ableton/Liobox2_AbletonScripts_3.1.6.zip
+scripts/Ableton/manifest.json
+scripts/Reaper/
+scripts/Reaper/Liobox2_ReaperScript_v1.1.0.zip
+scripts/Reaper/manifest.json
+software/
+software/GoorooLink/
+software/GoorooLink/beta/
+software/GoorooLink/production/
+software/GoorooLink/production/GoorooLink v0.2.4-beta.app.zip
+software/GoorooLink/production/GoorooLink v0.2.5-beta.app.zip
+software/GoorooLink/production/GoorooLink v0.2.6-beta.app.zip
+software/GoorooLink/production/appcast.xml
+software/GoorooLink/production/compatibility_registry.json
+
+
+To upload (4 file(s)) + registry:
+  • firmware 6.1.6: liobox2_v616.lbf → firmware/Liobox2/liobox2_v616.lbf
+  • firmware 6.1.5: liobox2_v615.lbf → firmware/Liobox2/liobox2_v615.lbf
+  • appcast.xml → software/GoorooLink/production/appcast.xml
+  • app 0.2.6-beta: GoorooLink v0.2.6-beta.app.zip → software/GoorooLink/production/GoorooLink v0.2.6-beta.app.zip
+
+⚠ Missing — neither local nor remote (8):
+  ✗ firmware 6.1.4: liobox2_v614.lbf
+  ✗ firmware 6.1.3: liobox2_v613.lbf
+  ✗ app 0.2.3-beta: no .zip found locally or remotely
+  ✗ app 0.2.4-beta: no .zip found locally or remotely
+  ✗ app 0.2.5-beta: no .zip found locally or remotely
+  ✗ ableton script 3.1.6: Liobox2_AbletonScripts_3.1.6.zip
+  ✗ ableton script 3.1.5: Liobox2_AbletonScripts_3.1.5.zip
+  ✗ reaper script 1.1.0: Liobox2_ReaperScript_v1.1.0.zip

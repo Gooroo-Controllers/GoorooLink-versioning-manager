@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "gooroo-registry-gui",
+      "type": "python",
+      "request": "launch",
+      "module": "gooroo_registry.gui",
+      "justMyCode": true
+    }
+  ]
+}

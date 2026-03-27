@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg
+
+# Credentials — NEVER commit real credentials
+config/openstack_env.local.sh
+.env
+*.env
+
+# macOS
+.DS_Store
+
+# Firmware binaries and script archives
+# These are large binary artifacts managed via Git LFS (see .gitattributes).
+# They are stored locally under artifacts/ but tracked via LFS, not plain Git.
+# If you are not using LFS, add them to .gitignore instead:
+# artifacts/firmware/*.lbf
+# artifacts/scripts/**/*.zip
+
+# Editor
+.idea/
+*.swp
+
+.venv*
