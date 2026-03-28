@@ -1297,8 +1297,7 @@ class GoorooRegistryGUI:
             # Update registry data
             self._rm.data = new_data
             
-            # Update timestamp first, then checksum (checksum must cover final data)
-            self._rm.update_generated_at()
+            # Update checksum based on the exact user-provided data
             self._rm.update_checksum()
             self._rm.save()
             
@@ -1317,7 +1316,7 @@ class GoorooRegistryGUI:
             messagebox.showerror("Save error", str(exc))
 
     def _cmd_update_editor_checksum(self) -> None:
-        """Update the checksum and timestamp in the code editor text."""
+        """Update the checksum in the code editor text."""
         code_text = self._code_text.get("1.0", "end").strip()
         if not code_text:
             return
@@ -1325,14 +1324,13 @@ class GoorooRegistryGUI:
             data = json.loads(code_text)
             
             # Update metadata
-            data["generatedAt"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             data["checksum"] = compute_registry_checksum(data)
             
             # Write back
             json_str = json.dumps(data, indent=4, ensure_ascii=False)
             self._code_text.delete("1.0", "end")
             self._code_text.insert("1.0", json_str)
-            self._code_status_var.set("✓ Checksum & timestamp updated")
+            self._code_status_var.set("✓ Checksum updated")
         except Exception as exc:
             messagebox.showerror("Update error", f"Could not update checksum: {exc}")
 
@@ -1652,6 +1650,10 @@ Purpose: Copy validated registry to GoorooLink for embedding
 
         def _run():
             _s3 = s3_path or f"/scripts/{daw.capitalize()}/{src.name}"
+            # Ensure the S3 path points to a file, not a directory
+            if _s3.endswith("/"):
+                _s3 = f"{_s3.rstrip('/')}/{src.name}"
+                
             print(f"Computing SHA256 of {src.name}…")
             checksum = compute_file_checksum(src)
             print(f"  {checksum}")
@@ -1788,9 +1790,7 @@ Purpose: Copy validated registry to GoorooLink for embedding
         ableton_scripts_folder = Path(self._ableton_scripts_folder_var.get().strip()) if self._ableton_scripts_folder_var.get().strip() else None
         reaper_scripts_folder = Path(self._reaper_scripts_folder_var.get().strip()) if self._reaper_scripts_folder_var.get().strip() else None
 
-        if not any([fw_folder, app_folder, ableton_scripts_folder, reaper_scripts_folder]):
-            messagebox.showwarning("No artifact folders", "Please specify at least one artifact folder (firmware, app, or scripts).")
-            return
+        # We no longer require explicit folders; publisher now automatically falls back to artifacts/ directory
 
         rm = self._rm
         self._log_line("─" * 60)

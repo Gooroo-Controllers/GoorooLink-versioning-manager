@@ -143,8 +143,10 @@ class S3Publisher:
                 label = f"firmware {fw_ver}: [DIRECTORY ERROR] {filename}/"
             else:
                 label = f"firmware {fw_ver}: {filename}"
-            
-            local_path = (fw_folder / filename) if fw_folder else None
+            if fw_folder:
+                local_path = fw_folder / filename
+            else:
+                local_path = registry.path.parent.parent / "artifacts" / "firmware" / filename
 
             if remote_path in remote_set:
                 plan.already_remote.append(label)
@@ -208,7 +210,16 @@ class S3Publisher:
                     label = f"{daw} script {script_ver}: {filename}"
                 
                 local_folder = ableton_scripts_folder if daw == "ableton" else reaper_scripts_folder
-                local_path = (local_folder / daw / filename) if local_folder else None
+                if local_folder:
+                    local_path = local_folder / daw / filename
+                else:
+                    local_path = registry.path.parent.parent / "artifacts" / "scripts" / daw / filename
+
+                # Fallback: if a custom folder was given but the file isn't there,
+                # also check the default artifacts/ path (where add-script always copies to).
+                default_path = registry.path.parent.parent / "artifacts" / "scripts" / daw / filename
+                if local_folder and not local_path.exists() and default_path.exists():
+                    local_path = default_path
 
                 if remote_path in remote_set:
                     plan.already_remote.append(label)

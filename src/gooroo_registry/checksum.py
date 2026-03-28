@@ -12,7 +12,7 @@ def compute_registry_checksum(data: dict) -> str:
     the legacy compute_registry_checksum.py script.
     """
     payload = {k: v for k, v in data.items() if k != "checksum"}
-    json_bytes = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    json_bytes = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     digest = hashlib.sha256(json_bytes).hexdigest()
     return f"sha256:{digest}"
 

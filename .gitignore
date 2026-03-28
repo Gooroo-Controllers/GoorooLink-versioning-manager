@@ -31,3 +31,5 @@ config/openstack_env.local.sh
 *.swp
 
 .venv*
+
+artifacts/*

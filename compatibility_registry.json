@@ -45,7 +45,7 @@
     },
     "axes": {
         "app_firmware": {
-            "description": "GoorooLink application \u2194 Liobox firmware version compatibility (blocking)",
+            "description": "GoorooLink application ↔ Liobox firmware version compatibility (blocking)",
             "pairs": {
                 "0.2.3-beta": [
                     "6.1.6",
@@ -68,7 +68,7 @@
             }
         },
         "firmware_ableton_script": {
-            "description": "Liobox firmware \u2194 Ableton MIDI Remote Script version compatibility (informational)",
+            "description": "Liobox firmware ↔ Ableton MIDI Remote Script version compatibility (informational)",
             "pairs": {
                 "6.1.4": [
                     "3.1.5"
@@ -96,7 +96,7 @@
             }
         },
         "firmware_reaper_script": {
-            "description": "Liobox firmware \u2194 Reaper script version compatibility (informational)",
+            "description": "Liobox firmware ↔ Reaper script version compatibility (informational)",
             "pairs": {
                 "6.1.4": [
                     "1.1.0"
@@ -117,5 +117,5 @@
             }
         }
     },
-    "checksum": "sha256:9d595a88fa71b7bb81634901b23e69053f8f8402616576377eba04f076b05181"
+    "checksum": "sha256:0f485ee0649082ef2101104c05d9e5066dca17fa703708dff1560ef8140b6e1a"
 }
