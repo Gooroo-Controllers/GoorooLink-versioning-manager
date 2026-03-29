@@ -27,7 +27,7 @@ class CompatibilityRegistryManager:
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.path, "w", encoding="utf-8") as f:
-            json.dump(self.data, f, indent=4, ensure_ascii=False)
+            json.dump(self.data, f, indent=4, ensure_ascii=False, sort_keys=True)
             f.write("\n")
 
     # ------------------------------------------------------------------
