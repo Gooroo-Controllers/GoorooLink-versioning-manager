@@ -31,6 +31,9 @@ class S3Publisher:
 
     CONTAINER = "app-updates"
     REGISTRY_OBJECT = "software/GoorooLink/production/compatibility_registry.json"
+    REGISTRY_OBJECT_SECONDARY = "software/GoorooLink/compatibility_registry.json"
+    APPCAST_OBJECT = "software/GoorooLink/production/appcast.xml"
+    APPCAST_OBJECT_SECONDARY = "software/GoorooLink/appcast.xml"
 
     def __init__(self, dry_run: bool = False):
         self.dry_run = dry_run
@@ -110,12 +113,15 @@ class S3Publisher:
         app_folder: Optional[Path] = None,
         ableton_scripts_folder: Optional[Path] = None,
         reaper_scripts_folder: Optional[Path] = None,
+        bitwig_scripts_folder: Optional[Path] = None,
         fw_s3_path: str = "firmware/Liobox2/",
         app_appcast_s3_path: str = "software/GoorooLink/production/appcast.xml",
         app_versions_s3_path: str = "software/GoorooLink/production/",
         ableton_s3_path: str = "scripts/Ableton/",
         reaper_s3_path: str = "scripts/Reaper/",
+        bitwig_s3_path: str = "scripts/Bitwig/",
         registry_s3_path: Optional[str] = None,
+        registry_secondary_s3_path: Optional[str] = None,
     ) -> PublishPlan:
         """Compare registry entries against the remote set and local folders.
 
@@ -124,8 +130,8 @@ class S3Publisher:
           - local file exists, not in remote_set  → to_upload
           - not local, not remote                 → missing (warning)
 
-        The registry JSON is NOT in the plan's to_upload list; it is handled
-        separately by execute_plan() and is always uploaded last.
+        The registry JSON is now included in the plan's to_upload list so it
+        can be reviewed/selected in the GUI confirmation dialog.
         """
         registry_s3_path = registry_s3_path or self.REGISTRY_OBJECT
         plan = PublishPlan(
@@ -164,6 +170,10 @@ class S3Publisher:
                 if app_appcast_s3_path in remote_set:
                     plan.appcast_overwrites_remote = True
                 plan.to_upload.append((appcast_path, app_appcast_s3_path, "appcast.xml"))
+                
+                # Also upload to secondary location if targeting production
+                if app_appcast_s3_path == self.APPCAST_OBJECT:
+                    plan.to_upload.append((appcast_path, self.APPCAST_OBJECT_SECONDARY, "appcast.xml (secondary)"))
 
             for app_ver in registry.data.get("protocol_requirements", {}).keys():
                 candidates = list(app_folder.glob(f"*{app_ver}*.zip"))
@@ -209,7 +219,14 @@ class S3Publisher:
                 else:
                     label = f"{daw} script {script_ver}: {filename}"
                 
-                local_folder = ableton_scripts_folder if daw == "ableton" else reaper_scripts_folder
+                if daw == "ableton":
+                    local_folder = ableton_scripts_folder
+                elif daw == "reaper":
+                    local_folder = reaper_scripts_folder
+                elif daw == "bitwig":
+                    local_folder = bitwig_scripts_folder
+                else:
+                    local_folder = None
                 if local_folder:
                     local_path = local_folder / daw / filename
                 else:
@@ -227,6 +244,21 @@ class S3Publisher:
                     plan.to_upload.append((local_path, remote_path, label))
                 else:
                     plan.missing.append(label)
+
+        # ── Registry ───────────────────────────────────────────────────
+        # Add registry to the end of the upload list
+        if plan.registry_s3_path:
+            plan.to_upload.append((
+                plan.registry_local_path,
+                plan.registry_s3_path,
+                "compatibility_registry.json"
+            ))
+        if registry_secondary_s3_path:
+            plan.to_upload.append((
+                plan.registry_local_path,
+                registry_secondary_s3_path,
+                "compatibility_registry.json (secondary)"
+            ))
 
         return plan
 
@@ -252,11 +284,8 @@ class S3Publisher:
             for label in plan.missing:
                 print(f"  ✗ {label}")
 
-        print("\nRegistry:")
-        self.upload_registry(plan.registry_local_path, plan.registry_s3_path)
-
-        total = len(plan.to_upload) + 1  # +1 for registry
-        print(f"\n✓ Done — {total} file(s) uploaded.")
+        total = len(plan.to_upload)
+        print(f"\n✓ Done — {total} file(s) processed.")
 
     def list_remote_artifacts(self) -> list[str]:
         """List all object names in the remote container."""
@@ -273,31 +302,30 @@ class S3Publisher:
         if self.dry_run:
             print(f"  [dry-run] Would upload {local_path.name} ({size_kb} KB) → {remote_path}")
             return
+
+        # Determine content type
+        content_type = None
+        if local_path.suffix == ".json":
+            content_type = "application/json; charset=utf-8"
+        elif local_path.suffix == ".xml":
+            content_type = "application/xml"
+
         conn = self._get_connection()
         with open(local_path, "rb") as fh:
+            kwargs = {
+                "contents": fh,
+                "content_length": local_path.stat().st_size,
+            }
+            if content_type:
+                kwargs["content_type"] = content_type
+                
             conn.put_object(
                 self.CONTAINER,
                 remote_path,
-                contents=fh,
-                content_length=local_path.stat().st_size,
+                **kwargs
             )
         print(f"  ✓ Uploaded {local_path.name} ({size_kb} KB) → {remote_path}")
 
-    def upload_registry(self, registry_path: Path, registry_s3_path: Optional[str] = None) -> None:
-        if registry_s3_path is None:
-            registry_s3_path = self.REGISTRY_OBJECT
-        if self.dry_run:
-            print(f"  [dry-run] Would upload compatibility_registry.json → {registry_s3_path}")
-            return
-        conn = self._get_connection()
-        content = registry_path.read_bytes()
-        conn.put_object(
-            self.CONTAINER,
-            registry_s3_path,
-            contents=content,
-            content_type="application/json; charset=utf-8",
-        )
-        print(f"  ✓ Uploaded registry → {registry_s3_path}")
 
     # ------------------------------------------------------------------
     # Helpers

@@ -8,6 +8,15 @@
                 ],
                 "1.0.0": [
                     "6.2.3"
+                ],
+                "1.0.1": [
+                    "6.2.4"
+                ],
+                "1.0.2": [
+                    "6.2.4"
+                ],
+                "1.0.3-beta": [
+                    "6.3.0"
                 ]
             }
         },
@@ -23,6 +32,24 @@
             "pairs": {
                 "6.2.3": [
                     "3.1.7"
+                ],
+                "6.2.4": [
+                    "3.1.7"
+                ]
+            }
+        },
+        "firmware_bitwig_script": {
+            "available_scripts": {
+                "1.0.0": {
+                    "checksum": "sha256:78c0739dd06f255beb6ac4e2b0704be4e10e77f4c0ad596105a1ae331e3d0536",
+                    "path": "/scripts/Bitwig/Liobox2_BitwigExtension_1.0.0.zip",
+                    "version": "1.0.0"
+                }
+            },
+            "description": "Liobox firmware ↔ Bitwig MIDI Remote Script version compatibility (informational)",
+            "pairs": {
+                "6.2.4": [
+                    "1.0.0"
                 ]
             }
         },
@@ -38,19 +65,27 @@
             "pairs": {
                 "6.2.3": [
                     "1.1.0"
+                ],
+                "6.2.4": [
+                    "1.1.0"
                 ]
             }
         }
     },
-    "checksum": "sha256:6386b85f9de224ee4a3434a129b9aa8b7bc73103e1514640cdf341ad98626253",
+    "checksum": "sha256:9ea670d907e70a32ae94d8add123ca6c38a218b0a6486d12debe213867c75347",
     "firmware": {
         "6.2.3": {
             "checksum": "sha256:089607f023c6684eff432c5c8fc8f9da987bd33f1912e01d5872c5838050d6df",
             "path": "firmware/Liobox2/liobox2_v623.lbf",
             "version": "6.2.3"
+        },
+        "6.2.4": {
+            "checksum": "sha256:3378d662ba294be1c44557d440452c11fd5abc481623ee6a5ba9c0c6bd19a5af",
+            "path": "firmware/Liobox2/liobox2_v624.lbf",
+            "version": "6.2.4"
         }
     },
-    "generatedAt": "2026-03-29T15:51:27Z",
+    "generatedAt": "2026-05-06T17:19:54Z",
     "protocol_requirements": {
         "0.9.9": {
             "device_datamodel_version": "1.0.0",
@@ -63,7 +98,28 @@
             "gprotocol_dev_command_set_version": "2.0.0",
             "gprotocol_std_command_set_version": "1.0.0",
             "gprotocol_version": "3.0.0"
+        },
+        "1.0.1": {
+            "device_datamodel_version": "1.0.0",
+            "gprotocol_dev_command_set_version": "2.0.0",
+            "gprotocol_std_command_set_version": "1.0.0",
+            "gprotocol_version": "3.0.0"
+        },
+        "1.0.2": {
+            "device_datamodel_version": "1.0.0",
+            "gprotocol_dev_command_set_version": "2.0.0",
+            "gprotocol_std_command_set_version": "1.0.0",
+            "gprotocol_version": "3.0.0"
+        },
+        "1.0.3-beta": {
+            "device_datamodel_version": [
+                "1.0.0",
+                "1.0.1"
+            ],
+            "gprotocol_dev_command_set_version": "2.0.0",
+            "gprotocol_std_command_set_version": "1.0.0",
+            "gprotocol_version": "3.0.0"
         }
     },
-    "schemaVersion": "2.0.17"
+    "schemaVersion": "2.0.26"
 }

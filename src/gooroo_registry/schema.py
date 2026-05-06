@@ -79,10 +79,18 @@ REGISTRY_SCHEMA: dict = {
                     "gprotocol_dev_command_set_version",
                 ],
                 "properties": {
-                    "gprotocol_version": {"type": "string"},
-                    "device_datamodel_version": {"type": "string"},
-                    "gprotocol_std_command_set_version": {"type": "string"},
-                    "gprotocol_dev_command_set_version": {"type": "string"},
+                    "gprotocol_version": {
+                        "anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]
+                    },
+                    "device_datamodel_version": {
+                        "anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]
+                    },
+                    "gprotocol_std_command_set_version": {
+                        "anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]
+                    },
+                    "gprotocol_dev_command_set_version": {
+                        "anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]
+                    },
                 },
                 "additionalProperties": False,
             },

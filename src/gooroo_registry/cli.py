@@ -158,13 +158,19 @@ def add_app(
 ) -> None:
     """Add an app version with its protocol requirements."""
     rm = _load_registry(ctx)
+
+    def _parse(val: str) -> str | list[str]:
+        if "," in val:
+            return [v.strip() for v in val.split(",") if v.strip()]
+        return val
+
     rm.add_app_version(
         version,
         {
-            "gprotocol_version": gprot,
-            "device_datamodel_version": datamodel,
-            "gprotocol_std_command_set_version": std_cmd,
-            "gprotocol_dev_command_set_version": dev_cmd,
+            "gprotocol_version": _parse(gprot),
+            "device_datamodel_version": _parse(datamodel),
+            "gprotocol_std_command_set_version": _parse(std_cmd),
+            "gprotocol_dev_command_set_version": _parse(dev_cmd),
         },
     )
     old_ver, new_ver = _bump_save(rm)
@@ -359,7 +365,7 @@ def publish(ctx: click.Context, dry_run: bool, strict: bool, skip_validate: bool
 
     # ── Step 3: print diff ───────────────────────────────────────────────
     if plan.to_upload:
-        click.echo(f"\nTo upload ({len(plan.to_upload)} file(s)) + registry:")
+        click.echo(f"\nTo upload ({len(plan.to_upload)} file(s)):")
         for _, remote_path, label in plan.to_upload:
             click.echo(f"  • {label}  →  {remote_path}")
     else:
@@ -469,3 +475,7 @@ def diff(ctx: click.Context) -> None:
     except Exception as exc:
         click.echo(f"Could not connect to S3: {exc}", err=True)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    cli()

@@ -280,18 +280,20 @@ class GoorooRegistryGUI:
         self._tab_app      = ttk.Frame(nb, padding=P)
         self._tab_script_ableton = ttk.Frame(nb, padding=P)
         self._tab_script_reaper  = ttk.Frame(nb, padding=P)
+        self._tab_script_bitwig  = ttk.Frame(nb, padding=P)
         self._tab_pairs    = ttk.Frame(nb, padding=P)
         self._tab_code     = ttk.Frame(nb, padding=P)
         self._tab_sync     = ttk.Frame(nb, padding=P)
         self._tab_publish  = ttk.Frame(nb, padding=P)
 
         nb.add(self._tab_status,   text="  Status & Validate  ")
-        nb.add(self._tab_firmware, text="  Add Firmware  ")
-        nb.add(self._tab_app,      text="  Add App  ")
-        nb.add(self._tab_script_ableton, text="  Add Ableton Script  ")
-        nb.add(self._tab_script_reaper,  text="  Add Reaper Script  ")
+        nb.add(self._tab_firmware, text="  Firmware  ")
+        nb.add(self._tab_app,      text="  App  ")
+        nb.add(self._tab_script_ableton, text="  Ableton Script  ")
+        nb.add(self._tab_script_reaper,  text="  Reaper Script  ")
+        nb.add(self._tab_script_bitwig,  text="  Bitwig Script  ")
         nb.add(self._tab_pairs,    text="  Pairs  ")
-        nb.add(self._tab_code,     text="  Code Editor  ")
+        nb.add(self._tab_code,     text="  Registry code  ")
         nb.add(self._tab_sync,     text="  Sync  ")
         nb.add(self._tab_publish,  text="  Publish  ")
 
@@ -300,6 +302,7 @@ class GoorooRegistryGUI:
         self._build_app_tab()
         self._build_script_ableton_tab()
         self._build_script_reaper_tab()
+        self._build_script_bitwig_tab()
         self._build_pairs_tab()
         self._build_code_tab()
         self._build_publish_tab()
@@ -599,6 +602,49 @@ class GoorooRegistryGUI:
         e_reaper_s3.bind("<FocusOut>", lambda e: self._save_settings())
         ttk.Label(tab, text="(e.g., scripts/Reaper/)", foreground="gray").pack(anchor="w", pady=(0, P))
 
+    def _build_script_bitwig_tab(self) -> None:
+        tab = self._tab_script_bitwig
+        P = self._PAD
+        f = ttk.Frame(tab); f.pack(fill="x")
+
+        self._script_bitwig_version_var = tk.StringVar()
+        ttk.Label(f, text="Version:").grid(row=0, column=0, sticky="w", pady=4, padx=(0, 8))
+        e_bitwig_version = ttk.Entry(f, textvariable=self._script_bitwig_version_var, width=22)
+        e_bitwig_version.grid(row=0, column=1, sticky="w")
+        e_bitwig_version.bind("<FocusOut>", lambda e: self._save_settings())
+        ttk.Button(f, text="Add Bitwig Script", command=self._cmd_add_script_bitwig).grid(row=0, column=2, padx=(8, 0))
+        
+        ttk.Separator(tab, orient="horizontal").pack(fill="x", pady=P)
+        
+        # Section 1: Specific script file for Adding
+        ttk.Label(tab, text="Bitwig Script .zip file (for adding to registry):", font=("", 11)).pack(anchor="w", pady=(0, P))
+        f_file = ttk.Frame(tab); f_file.pack(fill="x", pady=(0, P))
+        self._script_bitwig_file_var = tk.StringVar()
+        e_file = ttk.Entry(f_file, textvariable=self._script_bitwig_file_var, width=54)
+        e_file.pack(side="left", fill="x", expand=True, padx=(0, 4))
+        e_file.bind("<FocusOut>", lambda e: self._save_settings())
+        ttk.Button(f_file, text="Browse…", command=self._browse_bitwig_script_file).pack(side="left")
+
+        ttk.Separator(tab, orient="horizontal").pack(fill="x", pady=P)
+        
+        # Section 2: General scripts folder for Publishing
+        ttk.Label(tab, text="Scripts folder path (for publishing bulk artifacts):", font=("", 11)).pack(anchor="w", pady=(0, P))
+        f_scripts = ttk.Frame(tab); f_scripts.pack(fill="x", pady=(0, P))
+        self._bitwig_scripts_folder_var = tk.StringVar()
+        e_scripts = ttk.Entry(f_scripts, textvariable=self._bitwig_scripts_folder_var, width=54)
+        e_scripts.pack(side="left", fill="x", expand=True, padx=(0, 4))
+        e_scripts.bind("<FocusOut>", lambda e: self._save_settings())
+        ttk.Button(f_scripts, text="Browse…", command=self._browse_bitwig_scripts_folder).pack(side="left")
+        ttk.Label(tab, text="(local folder containing bitwig/ subdirectory with .zip files)", foreground="gray").pack(anchor="w", pady=(0, P))
+        
+        ttk.Separator(tab, orient="horizontal").pack(fill="x", pady=P)
+        ttk.Label(tab, text="S3 path for bitwig scripts (defaults to /scripts/Bitwig/filename):", font=("", 11)).pack(anchor="w", pady=(0, P))
+        self._bitwig_s3_path_var = tk.StringVar(value="scripts/Bitwig/")
+        e_bitwig_s3 = ttk.Entry(tab, textvariable=self._bitwig_s3_path_var, width=54)
+        e_bitwig_s3.pack(fill="x", pady=(0, P))
+        e_bitwig_s3.bind("<FocusOut>", lambda e: self._save_settings())
+        ttk.Label(tab, text="(e.g., scripts/Bitwig/)", foreground="gray").pack(anchor="w", pady=(0, P))
+
     # ── Tab: Pairs ───────────────────────────────────────────────────────
 
     def _build_pairs_tab(self) -> None:
@@ -794,12 +840,19 @@ class GoorooRegistryGUI:
         ttk.Label(creds_frame, text="(or source config/openstack_env.sh in terminal before launching)", foreground="gray", font=("", 9)).pack(anchor="w", padx=(20, 0))
 
         ttk.Separator(tab, orient="horizontal").pack(fill="x", pady=P)
-        ttk.Label(tab, text="S3 path for registry:", font=("", 11)).pack(anchor="w", pady=(0, P))
+        ttk.Label(tab, text="S3 path for registry (Primary):", font=("", 11)).pack(anchor="w", pady=(0, P))
         self._registry_s3_path_var = tk.StringVar(value="software/GoorooLink/production/compatibility_registry.json")
         e_registry_s3 = ttk.Entry(tab, textvariable=self._registry_s3_path_var, width=54)
         e_registry_s3.pack(fill="x", pady=(0, P))
         e_registry_s3.bind("<FocusOut>", lambda e: self._save_settings())
         ttk.Label(tab, text="(e.g., software/GoorooLink/production/compatibility_registry.json)", foreground="gray").pack(anchor="w", pady=(0, P))
+
+        ttk.Label(tab, text="S3 path for registry (Secondary):", font=("", 11)).pack(anchor="w", pady=(0, P))
+        self._registry_s3_path_secondary_var = tk.StringVar(value="software/GoorooLink/compatibility_registry.json")
+        e_registry_s3_sec = ttk.Entry(tab, textvariable=self._registry_s3_path_secondary_var, width=54)
+        e_registry_s3_sec.pack(fill="x", pady=(0, P))
+        e_registry_s3_sec.bind("<FocusOut>", lambda e: self._save_settings())
+        ttk.Label(tab, text="(e.g., software/GoorooLink/compatibility_registry.json - leave empty to skip)", foreground="gray").pack(anchor="w", pady=(0, P))
 
         ttk.Separator(tab, orient="horizontal").pack(fill="x", pady=P)
 
@@ -824,7 +877,10 @@ class GoorooRegistryGUI:
         e_sync_target.bind("<FocusOut>", lambda e: self._save_settings())
         ttk.Button(f, text="Browse…", command=self._browse_sync_target).grid(row=0, column=2, padx=(4, 0))
 
-        ttk.Button(tab, text="Sync", command=self._cmd_sync).pack(anchor="w", pady=(P, 0))
+        btn_row = ttk.Frame(tab)
+        btn_row.pack(anchor="w", pady=(P, 0))
+        ttk.Button(btn_row, text="Sync", command=self._cmd_sync).pack(side="left", padx=(0, 8))
+        ttk.Button(btn_row, text="Load from", command=self._cmd_load_from).pack(side="left")
 
     # ── Log helpers ──────────────────────────────────────────────────────
 
@@ -897,22 +953,29 @@ class GoorooRegistryGUI:
             self._script_reaper_version_var.set(self._settings.get("script_reaper_version", ""))
             self._reaper_s3_path_var.set(self._settings.get("reaper_s3_path", "scripts/Reaper/"))
 
+            # Restore bitwig script tab
+            self._script_bitwig_version_var.set(self._settings.get("script_bitwig_version", ""))
+            self._bitwig_s3_path_var.set(self._settings.get("bitwig_s3_path", "scripts/Bitwig/"))
+
             # Restore sync target
             self._sync_target_var.set(self._settings.get("sync_target", ""))
 
             # Restore publish tab
             self._registry_s3_path_var.set(self._settings.get("registry_s3_path", "software/GoorooLink/production/compatibility_registry.json"))
+            self._registry_s3_path_secondary_var.set(self._settings.get("registry_s3_path_secondary", "software/GoorooLink/compatibility_registry.json"))
 
             # Restore artifact folders
             self._fw_folder_var.set(self._settings.get("fw_folder", ""))
             self._app_folder_var.set(self._settings.get("app_folder", ""))
             self._ableton_scripts_folder_var.set(self._settings.get("ableton_scripts_folder", ""))
             self._reaper_scripts_folder_var.set(self._settings.get("reaper_scripts_folder", ""))
+            self._bitwig_scripts_folder_var.set(self._settings.get("bitwig_scripts_folder", ""))
 
             # Restore specific files
             self._fw_file_var.set(self._settings.get("fw_file", ""))
             self._script_ableton_file_var.set(self._settings.get("script_ableton_file", ""))
             self._script_reaper_file_var.set(self._settings.get("script_reaper_file", ""))
+            self._script_bitwig_file_var.set(self._settings.get("script_bitwig_file", ""))
 
             # Auto-restore OpenStack credentials if a working combination was saved
             self._try_auto_load_credentials()
@@ -949,8 +1012,13 @@ class GoorooRegistryGUI:
                 "script_reaper_file": self._script_reaper_file_var.get(),
                 "reaper_scripts_folder": self._reaper_scripts_folder_var.get(),
                 "reaper_s3_path": self._reaper_s3_path_var.get(),
+                "script_bitwig_version": self._script_bitwig_version_var.get(),
+                "script_bitwig_file": self._script_bitwig_file_var.get(),
+                "bitwig_scripts_folder": self._bitwig_scripts_folder_var.get(),
+                "bitwig_s3_path": self._bitwig_s3_path_var.get(),
                 "sync_target": self._sync_target_var.get(),
                 "registry_s3_path": self._registry_s3_path_var.get(),
+                "registry_s3_path_secondary": self._registry_s3_path_secondary_var.get(),
             }
             SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
             with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
@@ -1222,6 +1290,21 @@ class GoorooRegistryGUI:
             self._reaper_scripts_folder_var.set(path)
             self._save_settings()
 
+    def _browse_bitwig_script_file(self) -> None:
+        path = filedialog.askopenfilename(
+            title="Select Bitwig Script (.zip) file",
+            filetypes=[("Zip files", "*.zip"), ("All files", "*.*")]
+        )
+        if path:
+            self._script_bitwig_file_var.set(path)
+            self._save_settings()
+
+    def _browse_bitwig_scripts_folder(self) -> None:
+        path = filedialog.askdirectory(title="Select Scripts folder (containing bitwig/ subdirectory)")
+        if path:
+            self._bitwig_scripts_folder_var.set(path)
+            self._save_settings()
+
     # ── Guard ────────────────────────────────────────────────────────────
 
     def _require_rm(self) -> bool:
@@ -1389,8 +1472,8 @@ STEP 3B: ADD APP VERSION (optional, Add App tab)
   • Click "Add App" to register in compatibility registry
   → Auto-updates schemaVersion, timestamps, and master checksum
 
-STEP 3C: ADD SCRIPTS (optional, Add Ableton Script & Add Reaper Script tabs)
-  • For each DAW (Ableton and/or Reaper):
+STEP 3C: ADD SCRIPTS (optional, Add Ableton/Reaper/Bitwig Script tabs)
+  • For each DAW (Ableton, Reaper or Bitwig):
     ◦ Enter script version (e.g., 1.5.2)
     ◦ Browse and select .zip script package file
     ◦ S3 Path auto-filled (or customize if needed)
@@ -1601,11 +1684,16 @@ Purpose: Copy validated registry to GoorooLink for embedding
         rm = self._rm
 
         def _run():
+            def _parse(val: str) -> str | list[str]:
+                if "," in val:
+                    return [v.strip() for v in val.split(",") if v.strip()]
+                return val
+
             rm.add_app_version(version, {
-                "gprotocol_version": gprot,
-                "device_datamodel_version": datamodel,
-                "gprotocol_std_command_set_version": std_cmd,
-                "gprotocol_dev_command_set_version": dev_cmd,
+                "gprotocol_version": _parse(gprot),
+                "device_datamodel_version": _parse(datamodel),
+                "gprotocol_std_command_set_version": _parse(std_cmd),
+                "gprotocol_dev_command_set_version": _parse(dev_cmd),
             })
             rm.update_generated_at()
             rm.update_checksum()
@@ -1623,9 +1711,13 @@ Purpose: Copy validated registry to GoorooLink for embedding
         self._cmd_add_script_impl("reaper", self._script_reaper_version_var,
                                    self._script_reaper_file_var, self._reaper_s3_path_var)
 
+    def _cmd_add_script_bitwig(self) -> None:
+        self._cmd_add_script_impl("bitwig", self._script_bitwig_version_var,
+                                   self._script_bitwig_file_var, self._bitwig_s3_path_var)
+
     def _cmd_add_script_impl(self, daw: str, version_var: tk.StringVar,
                              file_var: tk.StringVar, s3_var: tk.StringVar) -> None:
-        """Implementation shared by both ableton and reaper script commands."""
+        """Implementation shared by ableton, reaper and bitwig script commands."""
         if not self._require_rm():
             return
         version  = version_var.get().strip()
@@ -1789,6 +1881,7 @@ Purpose: Copy validated registry to GoorooLink for embedding
         app_folder = Path(self._app_folder_var.get().strip()) if self._app_folder_var.get().strip() else None
         ableton_scripts_folder = Path(self._ableton_scripts_folder_var.get().strip()) if self._ableton_scripts_folder_var.get().strip() else None
         reaper_scripts_folder = Path(self._reaper_scripts_folder_var.get().strip()) if self._reaper_scripts_folder_var.get().strip() else None
+        bitwig_scripts_folder = Path(self._bitwig_scripts_folder_var.get().strip()) if self._bitwig_scripts_folder_var.get().strip() else None
 
         # We no longer require explicit folders; publisher now automatically falls back to artifacts/ directory
 
@@ -1814,12 +1907,15 @@ Purpose: Copy validated registry to GoorooLink for embedding
                 app_folder=app_folder,
                 ableton_scripts_folder=ableton_scripts_folder,
                 reaper_scripts_folder=reaper_scripts_folder,
+                bitwig_scripts_folder=bitwig_scripts_folder,
                 fw_s3_path=self._fw_s3_path_var.get(),
                 app_appcast_s3_path=self._app_appcast_s3_path_var.get(),
                 app_versions_s3_path=self._app_versions_s3_path_var.get(),
                 ableton_s3_path=self._ableton_s3_path_var.get(),
                 reaper_s3_path=self._reaper_s3_path_var.get(),
-                registry_s3_path=self._registry_s3_path_var.get(),
+                bitwig_s3_path=self._bitwig_s3_path_var.get(),
+                registry_s3_path=self._registry_s3_path_var.get().strip() or None,
+                registry_secondary_s3_path=self._registry_s3_path_secondary_var.get().strip() or None,
             )
 
             # Print plan to log
@@ -1936,6 +2032,32 @@ Purpose: Copy validated registry to GoorooLink for embedding
             print(f"✓ Copied {rm.path} → {dest}")
             self._settings["synced_checksum"] = rm.data.get("checksum", "")
             self._save_settings()
+            self.root.after(0, self._refresh_ui)
+
+        self._run_in_thread(_run)
+
+    def _cmd_load_from(self) -> None:
+        target = self._sync_target_var.get().strip()
+        if not target:
+            messagebox.showerror("Validation", "Target directory is required.")
+            return
+
+        target_dir = Path(target)
+        src = target_dir / "compatibility_registry.json"
+        if not src.exists():
+            messagebox.showerror("Error", f"Source file not found: {src}")
+            return
+
+        dest = Path(self._registry_path_var.get())
+        if not messagebox.askyesno("Confirm Load", f"Replace local registry {dest.name}\nwith the version from {target_dir.name}?\n\nThis will overwrite your local file."):
+            return
+
+        self._log_line("─" * 60)
+        self._log_line(f"Loading registry from {target}…")
+
+        def _run():
+            shutil.copy2(src, dest)
+            print(f"✓ Loaded {src} → {dest}")
             self.root.after(0, self._refresh_ui)
 
         self._run_in_thread(_run)
