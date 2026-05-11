@@ -338,18 +338,21 @@ def publish(ctx: click.Context, dry_run: bool, strict: bool, skip_validate: bool
 
     publisher = S3Publisher(dry_run=dry_run)
     fw_folder = artifacts_dir / "firmware"
+    app_folder = artifacts_dir / "app"
     scripts_dir = artifacts_dir / "scripts"
 
     # ── Step 1: fetch remote listing (one API call) ──────────────────────
-    if dry_run:
-        click.echo("\n[dry-run] Skipping remote check — treating all local files as new.")
-        remote_set: set[str] = set()
-    else:
-        click.echo("\nFetching remote object listing…")
-        try:
-            remote_set = S3Publisher(dry_run=False).get_remote_set()
-            click.echo(f"  {len(remote_set)} object(s) found on remote.")
-        except Exception as exc:
+    click.echo("\nFetching remote object listing…")
+    try:
+        remote_set = S3Publisher(dry_run=False).get_remote_set()
+        click.echo(f"  {len(remote_set)} object(s) found on remote.")
+        if dry_run:
+            click.echo("  [dry-run] Remote listing fetched for accurate diff — nothing will be uploaded.")
+    except Exception as exc:
+        if dry_run:
+            click.echo(f"  [dry-run] Could not reach remote ({exc}), skipping remote check.")
+            remote_set = set()
+        else:
             click.echo(f"  ✗ Could not reach remote: {exc}", err=True)
             sys.exit(1)
 
@@ -359,8 +362,10 @@ def publish(ctx: click.Context, dry_run: bool, strict: bool, skip_validate: bool
         rm,
         remote_set=remote_set,
         fw_folder=fw_folder,
+        app_folder=app_folder,
         ableton_scripts_folder=scripts_dir,
         reaper_scripts_folder=scripts_dir,
+        bitwig_scripts_folder=scripts_dir,
     )
 
     # ── Step 3: print diff ───────────────────────────────────────────────

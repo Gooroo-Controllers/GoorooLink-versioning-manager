@@ -15,7 +15,11 @@
                 "1.0.2": [
                     "6.2.4"
                 ],
-                "1.0.3-beta": [
+                "1.0.4": [
+                    "6.2.4",
+                    "6.3.0"
+                ],
+                "1.0.5-beta": [
                     "6.3.0"
                 ]
             }
@@ -35,6 +39,9 @@
                 ],
                 "6.2.4": [
                     "3.1.7"
+                ],
+                "6.3.0": [
+                    "3.1.7"
                 ]
             }
         },
@@ -49,6 +56,9 @@
             "description": "Liobox firmware ↔ Bitwig MIDI Remote Script version compatibility (informational)",
             "pairs": {
                 "6.2.4": [
+                    "1.0.0"
+                ],
+                "6.3.0": [
                     "1.0.0"
                 ]
             }
@@ -68,11 +78,14 @@
                 ],
                 "6.2.4": [
                     "1.1.0"
+                ],
+                "6.3.0": [
+                    "1.1.0"
                 ]
             }
         }
     },
-    "checksum": "sha256:9ea670d907e70a32ae94d8add123ca6c38a218b0a6486d12debe213867c75347",
+    "checksum": "sha256:8632fe2904be7e93b2a6e3321ca82ae1973bf32fa822191391c14984a0a7ded9",
     "firmware": {
         "6.2.3": {
             "checksum": "sha256:089607f023c6684eff432c5c8fc8f9da987bd33f1912e01d5872c5838050d6df",
@@ -83,9 +96,14 @@
             "checksum": "sha256:3378d662ba294be1c44557d440452c11fd5abc481623ee6a5ba9c0c6bd19a5af",
             "path": "firmware/Liobox2/liobox2_v624.lbf",
             "version": "6.2.4"
+        },
+        "6.3.0": {
+            "checksum": "sha256:3bf65ed9b3c4e9cd961b9b6d848ff68dbb7d158f5f40aa707ae3ddbcdade8572",
+            "path": "firmware/Liobox2/liobox2_v630.lbf",
+            "version": "6.3.0"
         }
     },
-    "generatedAt": "2026-05-06T17:19:54Z",
+    "generatedAt": "2026-05-07T20:59:29Z",
     "protocol_requirements": {
         "0.9.9": {
             "device_datamodel_version": "1.0.0",
@@ -111,7 +129,16 @@
             "gprotocol_std_command_set_version": "1.0.0",
             "gprotocol_version": "3.0.0"
         },
-        "1.0.3-beta": {
+        "1.0.4": {
+            "device_datamodel_version": [
+                "1.0.0",
+                "1.0.1"
+            ],
+            "gprotocol_dev_command_set_version": "2.0.0",
+            "gprotocol_std_command_set_version": "1.0.0",
+            "gprotocol_version": "3.0.0"
+        },
+        "1.0.5-beta": {
             "device_datamodel_version": [
                 "1.0.0",
                 "1.0.1"
@@ -121,5 +148,5 @@
             "gprotocol_version": "3.0.0"
         }
     },
-    "schemaVersion": "2.0.26"
+    "schemaVersion": "2.0.28"
 }

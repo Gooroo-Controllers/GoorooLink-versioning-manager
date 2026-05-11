@@ -162,9 +162,45 @@ class S3Publisher:
                 plan.missing.append(label)
 
         # ── App ─────────────────────────────────────────────────────────
-        if app_folder and app_folder.exists():
-            # appcast.xml — always re-upload (it changes with every release)
-            appcast_path = app_folder / "appcast.xml"
+        app_search_folder = app_folder
+        if not app_search_folder:
+            app_search_folder = registry.path.parent.parent / "artifacts" / "app"
+
+        for app_ver in registry.data.get("protocol_requirements", {}).keys():
+            candidates = []
+            if app_search_folder and app_search_folder.exists():
+                candidates = list(app_search_folder.glob(f"*{app_ver}*.zip"))
+
+            if candidates:
+                app_zip = candidates[0]
+                remote_path = f"{app_versions_s3_path}{app_zip.name}"
+                label = f"app {app_ver}: {app_zip.name}"
+                if remote_path in remote_set:
+                    plan.already_remote.append(label)
+                else:
+                    plan.to_upload.append((app_zip, remote_path, label))
+            else:
+                # Check whether a matching zip is already on the remote
+                remote_match = next(
+                    (
+                        p for p in remote_set
+                        if p.startswith(app_versions_s3_path)
+                        and app_ver in p
+                        and p.endswith(".zip")
+                    ),
+                    None,
+                )
+                if remote_match:
+                    plan.already_remote.append(
+                        f"app {app_ver}: {Path(remote_match).name} (remote only)"
+                    )
+                else:
+                    plan.missing.append(f"app {app_ver}: no .zip found locally or remotely")
+
+        # appcast.xml — always re-upload (it changes with every release)
+        app_search_folder_xml = app_folder or (registry.path.parent.parent / "artifacts" / "app")
+        if app_search_folder_xml and app_search_folder_xml.exists():
+            appcast_path = app_search_folder_xml / "appcast.xml"
             if appcast_path.exists():
                 plan.remote_appcast_path = app_appcast_s3_path
                 if app_appcast_s3_path in remote_set:
@@ -174,34 +210,6 @@ class S3Publisher:
                 # Also upload to secondary location if targeting production
                 if app_appcast_s3_path == self.APPCAST_OBJECT:
                     plan.to_upload.append((appcast_path, self.APPCAST_OBJECT_SECONDARY, "appcast.xml (secondary)"))
-
-            for app_ver in registry.data.get("protocol_requirements", {}).keys():
-                candidates = list(app_folder.glob(f"*{app_ver}*.zip"))
-                if candidates:
-                    app_zip = candidates[0]
-                    remote_path = f"{app_versions_s3_path}{app_zip.name}"
-                    label = f"app {app_ver}: {app_zip.name}"
-                    if remote_path in remote_set:
-                        plan.already_remote.append(label)
-                    else:
-                        plan.to_upload.append((app_zip, remote_path, label))
-                else:
-                    # Check whether a matching zip is already on the remote
-                    remote_match = next(
-                        (
-                            p for p in remote_set
-                            if p.startswith(app_versions_s3_path)
-                            and app_ver in p
-                            and p.endswith(".zip")
-                        ),
-                        None,
-                    )
-                    if remote_match:
-                        plan.already_remote.append(
-                            f"app {app_ver}: {Path(remote_match).name} (remote only)"
-                        )
-                    else:
-                        plan.missing.append(f"app {app_ver}: no .zip found locally or remotely")
 
         # ── Scripts ─────────────────────────────────────────────────────
         for axis_name, axis_data in registry.data.get("axes", {}).items():
