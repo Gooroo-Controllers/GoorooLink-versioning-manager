@@ -117,6 +117,7 @@ class S3Publisher:
         fw_s3_path: str = "firmware/Liobox2/",
         app_appcast_s3_path: str = "software/GoorooLink/production/appcast.xml",
         app_versions_s3_path: str = "software/GoorooLink/production/",
+        app_beta_s3_path: str = "software/GoorooLink/beta/",
         ableton_s3_path: str = "scripts/Ableton/",
         reaper_s3_path: str = "scripts/Reaper/",
         bitwig_s3_path: str = "scripts/Bitwig/",
@@ -173,7 +174,10 @@ class S3Publisher:
 
             if candidates:
                 app_zip = candidates[0]
-                remote_path = f"{app_versions_s3_path}{app_zip.name}"
+                base_path = app_versions_s3_path
+                if app_zip.stem.endswith("-beta"):
+                    base_path = app_beta_s3_path
+                remote_path = f"{base_path}{app_zip.name}"
                 label = f"app {app_ver}: {app_zip.name}"
                 if remote_path in remote_set:
                     plan.already_remote.append(label)

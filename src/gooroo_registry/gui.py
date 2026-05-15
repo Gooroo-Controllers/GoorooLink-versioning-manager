@@ -510,6 +510,13 @@ class GoorooRegistryGUI:
         e_app_versions_s3.bind("<FocusOut>", lambda e: self._save_settings())
         ttk.Label(tab, text="(e.g., software/GoorooLink/production/ - version zips will be uploaded here)", foreground="gray").pack(anchor="w", pady=(0, P))
 
+        ttk.Label(tab, text="S3 path for beta versions:", font=("", 11)).pack(anchor="w", pady=(0, P))
+        self._app_beta_s3_path_var = tk.StringVar(value="software/GoorooLink/beta/")
+        e_app_beta_s3 = ttk.Entry(tab, textvariable=self._app_beta_s3_path_var, width=54)
+        e_app_beta_s3.pack(fill="x", pady=(0, P))
+        e_app_beta_s3.bind("<FocusOut>", lambda e: self._save_settings())
+        ttk.Label(tab, text="(e.g., software/GoorooLink/beta/ - beta version zips will be uploaded here)", foreground="gray").pack(anchor="w", pady=(0, P))
+
     # ── Tab: Add Ableton Script ─────────────────────────────────────────
     # (Removed - now using Scripts folder from App tab)
 
@@ -944,6 +951,7 @@ class GoorooRegistryGUI:
             self._app_dev_var.set(self._settings.get("app_dev_cmd", ""))
             self._app_appcast_s3_path_var.set(self._settings.get("app_appcast_s3_path", "software/GoorooLink/production/appcast.xml"))
             self._app_versions_s3_path_var.set(self._settings.get("app_versions_s3_path", "software/GoorooLink/production/"))
+            self._app_beta_s3_path_var.set(self._settings.get("app_beta_s3_path", "software/GoorooLink/beta/"))
 
             # Restore ableton script tab
             self._script_ableton_version_var.set(self._settings.get("script_ableton_version", ""))
@@ -1004,6 +1012,7 @@ class GoorooRegistryGUI:
                 "app_folder": self._app_folder_var.get(),
                 "app_appcast_s3_path": self._app_appcast_s3_path_var.get(),
                 "app_versions_s3_path": self._app_versions_s3_path_var.get(),
+                "app_beta_s3_path": self._app_beta_s3_path_var.get(),
                 "script_ableton_version": self._script_ableton_version_var.get(),
                 "script_ableton_file": self._script_ableton_file_var.get(),
                 "ableton_scripts_folder": self._ableton_scripts_folder_var.get(),
@@ -1911,6 +1920,7 @@ Purpose: Copy validated registry to GoorooLink for embedding
                 fw_s3_path=self._fw_s3_path_var.get(),
                 app_appcast_s3_path=self._app_appcast_s3_path_var.get(),
                 app_versions_s3_path=self._app_versions_s3_path_var.get(),
+                app_beta_s3_path=self._app_beta_s3_path_var.get(),
                 ableton_s3_path=self._ableton_s3_path_var.get(),
                 reaper_s3_path=self._reaper_s3_path_var.get(),
                 bitwig_s3_path=self._bitwig_s3_path_var.get(),

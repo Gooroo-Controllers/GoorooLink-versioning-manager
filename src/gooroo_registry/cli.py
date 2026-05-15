@@ -363,6 +363,7 @@ def publish(ctx: click.Context, dry_run: bool, strict: bool, skip_validate: bool
         remote_set=remote_set,
         fw_folder=fw_folder,
         app_folder=app_folder,
+        app_beta_s3_path="software/GoorooLink/beta/",
         ableton_scripts_folder=scripts_dir,
         reaper_scripts_folder=scripts_dir,
         bitwig_scripts_folder=scripts_dir,

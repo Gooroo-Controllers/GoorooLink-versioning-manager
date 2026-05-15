@@ -21,6 +21,15 @@
                 ],
                 "1.0.5-beta": [
                     "6.3.0"
+                ],
+                "1.0.5": [
+                    "6.3.0"
+                ],
+                "1.0.6-beta": [
+                    "6.3.0"
+                ],
+                "1.0.7-beta": [
+                    "6.3.0"
                 ]
             }
         },
@@ -85,7 +94,7 @@
             }
         }
     },
-    "checksum": "sha256:8632fe2904be7e93b2a6e3321ca82ae1973bf32fa822191391c14984a0a7ded9",
+    "checksum": "sha256:2fa7f73429ba0ed4e8bd2dd1682eb43b0ff27b30a9815ac2a60db995e9b9c784",
     "firmware": {
         "6.2.3": {
             "checksum": "sha256:089607f023c6684eff432c5c8fc8f9da987bd33f1912e01d5872c5838050d6df",
@@ -146,7 +155,34 @@
             "gprotocol_dev_command_set_version": "2.0.0",
             "gprotocol_std_command_set_version": "1.0.0",
             "gprotocol_version": "3.0.0"
+        },
+        "1.0.5": {
+            "device_datamodel_version": [
+                "1.0.0",
+                "1.0.1"
+            ],
+            "gprotocol_dev_command_set_version": "2.0.0",
+            "gprotocol_std_command_set_version": "1.0.0",
+            "gprotocol_version": "3.0.0"
+        },
+        "1.0.6-beta": {
+            "device_datamodel_version": [
+                "1.0.0",
+                "1.0.1"
+            ],
+            "gprotocol_dev_command_set_version": "2.0.0",
+            "gprotocol_std_command_set_version": "1.0.0",
+            "gprotocol_version": "3.0.0"
+        },
+        "1.0.7-beta": {
+            "device_datamodel_version": [
+                "1.0.0",
+                "1.0.1"
+            ],
+            "gprotocol_dev_command_set_version": "2.0.0",
+            "gprotocol_std_command_set_version": "1.0.0",
+            "gprotocol_version": "3.0.0"
         }
     },
-    "schemaVersion": "2.0.28"
+    "schemaVersion": "2.0.31"
 }
